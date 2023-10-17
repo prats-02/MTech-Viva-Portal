@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forget Password</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <body>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/studLogin">Go Back</a></li>
+    </ul>
+    <div class="login-page">
+      <div class="form">
+        <div class="login">
+          <div class="login-header">
+            <h2>Forget Password</h2>
+          </div>
+        </div>
+        <form class="login-form" id="stud-form">
+            <div>Email:</div>
+            <input type="text" class="inp" id="email" value="">
+            <p class="msg" id="4"></p>
+            <button type="submit">Submit</button>
+        </form>
+        <br>
+      </div>
+    </div>
+</body>
+</body>
+<script>
+    
+    validate();
+    async function validate() {
+        const token=localStorage.getItem('token');
+        const result = await fetch('/api/reval', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                token: token,
+                type: '1'
+            })
+        }).then((res) => res.json())
+
+        if(result.status==='ok')
+        {
+            alert('Invalid Attempt to view this page.')
+            window.location = '/stud'
+        }
+    }
+
+    const form=document.getElementById('stud-form');
+    form.addEventListener('submit', forget);
+
+    async function forget(event) {
+        event.preventDefault()
+        const email = document.getElementById('email').value
+        const result = await fetch('/api/forget', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,
+                type: '1'
+            })
+        }).then((res) => res.json())
+        document.getElementById('4').innerHTML = ''
+        if (result.status === 'ok') {
+            alert('Mail has been send to the email.')
+            window.location='/studLogin'
+        } else if(result.idx === '4') {
+            document.getElementById('email').value=''
+            document.getElementById('4').innerHTML=result.error
+        } else {
+            alert(result.error)
+            window.location='/forgetStud'
+        }
+    }
+</script>
+</html>
